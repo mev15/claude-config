@@ -124,7 +124,7 @@ PANE_ID=$(herdr pane split --pane "$HERDR_PANE_ID" --direction right --ratio 0.4
 
 # 3. 在新 pane 中启动交互式 codex（沙箱只读铁律不变），agent 名加时间戳避免撞名
 AGENT="codex-review-$(date +%s)"
-herdr agent start "$AGENT" --kind codex --pane "$PANE_ID" --timeout 60000 -- -s read-only -a on-failure
+herdr agent start "$AGENT" --kind codex --pane "$PANE_ID" --timeout 60000 -- -s read-only -a never
 ```
 
 记住 `$PANE_ID` 和 `$AGENT` 的实际值——后续每次 Bash 调用是新 shell，变量不会保留。
@@ -142,7 +142,7 @@ herdr agent read "$AGENT" --source recent-unwrapped --lines 400 --format text
 | 要点 | 说明 |
 |------|------|
 | `-s read-only` | 沙箱只读铁律不变；codex 无法写文件，报告从终端读取 |
-| `-a on-failure` | 只读命令沙箱内自动执行，最小化交互审批（等价 exec 模式的 `--full-auto`） |
+| `-a never` | 从不请求人工审批，失败直接返回给模型自行处理；安全性由只读沙箱兜底（codex ≥0.145 已移除 `on-failure` 取值） |
 | `--wait --timeout 600000` | 阻塞至 codex 空闲，10 分钟上限；超时处理见 Troubleshooting |
 | `--no-focus` | 不抢用户当前焦点 |
 
@@ -151,14 +151,15 @@ herdr agent read "$AGENT" --source recent-unwrapped --lines 400 --format text
 #### Mode B: codex exec（非 herdr 环境）
 
 ```bash
-codex exec -s read-only --full-auto -o /tmp/codex-review-output.txt "<review-prompt>"
+codex exec -s read-only -o /tmp/codex-review-output.txt "<review-prompt>"
 ```
 
 | 参数 | 作用 |
 |------|------|
 | `-s read-only` | 沙箱只读，保证 Codex 不修改任何代码 |
-| `--full-auto` | 无需人工确认，自动完成审查 |
 | `-o <file>` | 将审查报告写入文件 |
+
+注：codex ≥0.145 已弃用 `--full-auto`（exec 本身即非交互自动执行），不要再加回。
 
 **超时处理：** 设置 Bash timeout 为 300 秒（5 分钟）。如果超时，汇报给用户并建议减小审查范围。
 
@@ -215,7 +216,7 @@ herdr agent prompt "$AGENT" "我已修复以下问题：<修复摘要>。diff �
 herdr agent read "$AGENT" --source recent-unwrapped --lines 400 --format text
 
 # Mode B（exec）：重新调用 Codex
-codex exec -s read-only --full-auto -o /tmp/codex-review-output.txt "<review-prompt>"
+codex exec -s read-only -o /tmp/codex-review-output.txt "<review-prompt>"
 ```
 
 **通过条件：** 报告中无 Critical（边界内）且无 Important（边界内）。
