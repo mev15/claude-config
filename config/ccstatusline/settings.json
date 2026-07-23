@@ -1,0 +1,93 @@
+{
+  "version": 3,
+  "lines": [
+    [
+      {
+        "id": "1",
+        "type": "model",
+        "color": "cyan"
+      },
+      {
+        "id": "2",
+        "type": "separator"
+      },
+      {
+        "id": "636ea302-8165-46ca-8535-66c0ed4b9b87",
+        "type": "context-bar",
+        "metadata": {
+          "display": "slider"
+        }
+      },
+      {
+        "id": "4ad516aa-79bf-4d81-bf7d-521d8f3cc636",
+        "type": "separator"
+      },
+      {
+        "id": "cf462d1f-c912-4280-8614-b85c69c2b9fb",
+        "type": "session-usage",
+        "metadata": {
+          "display": "slider"
+        }
+      },
+      {
+        "id": "4ac0e413-1123-4ae9-99e4-620aa4446e91",
+        "type": "separator"
+      },
+      {
+        "id": "be31c3e4-08b3-4d63-b423-0e3dec8c4ab5",
+        "type": "reset-timer"
+      },
+      {
+        "id": "739891c7-4a8b-43c1-be73-a90f64666a06",
+        "type": "separator"
+      },
+      {
+        "id": "f68075fe-a108-4021-bfbe-5eec2fa060b9",
+        "type": "weekly-usage"
+      }
+    ],
+    [
+      {
+        "id": "348998c7-a573-4e0a-9777-076c5fa20702",
+        "type": "git-root-dir"
+      },
+      {
+        "id": "d7f406e2-aa86-481f-8a52-6354d02c26cb",
+        "type": "separator"
+      },
+      {
+        "id": "e9e64046-1ff9-446b-8c03-629f947c60a6",
+        "type": "git-branch"
+      },
+      {
+        "id": "a70e62e2-82a2-4172-a58f-1ffe01f9176e",
+        "type": "separator"
+      },
+      {
+        "id": "2f4b4fef-507f-40d0-bd14-0669d4bbce86",
+        "type": "git-changes"
+      }
+    ],
+    []
+  ],
+  "flexMode": "full-minus-40",
+  "compactThreshold": 60,
+  "colorLevel": 2,
+  "inheritSeparatorColors": false,
+  "globalBold": false,
+  "gitCacheTtlSeconds": 5,
+  "minimalistMode": false,
+  "powerline": {
+    "enabled": false,
+    "separators": [
+      ""
+    ],
+    "separatorInvertBackground": [
+      false
+    ],
+    "startCaps": [],
+    "endCaps": [],
+    "autoAlign": false,
+    "continueThemeAcrossLines": false
+  }
+}

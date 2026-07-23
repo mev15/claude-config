@@ -39,7 +39,7 @@
 | 2 | `permissions.deny` | `Bash(rm -rf *)`<br>`Bash(rm -rf)`<br>`Bash(* rm -rf *)`<br>`Bash(rm * -rf *)` | `[]` | 硬禁递归删除（删除一律走 trash-cli）；deny 恒胜 allow 与分类器 |
 | 3 | `alwaysThinkingEnabled` | `true` | 缺省即开 \* | 每轮带 extended thinking |
 | 4 | `language` | `"Chinese"` | 未设置（英文） | 回复语言 + 语音听写 + 终端标签标题生成 |
-| 5 | `statusLine` | `{"type":"command",`<br>`"command":"npx -y ccstatusline@latest",`<br>`"padding":0}` | 无状态栏 | 第三方状态栏 [ccstatusline](https://github.com/sirmalloc/ccstatusline) |
+| 5 | `statusLine` | `{"type":"command",`<br>`"command":"npx -y ccstatusline@latest",`<br>`"padding":0}` | 无状态栏 | 第三方状态栏 [ccstatusline](https://github.com/sirmalloc/ccstatusline)；其自身配置与安装见 [ccstatusline/](ccstatusline/) |
 | 6 | `preferredNotifChannel` | `"terminal_bell"` \*\* | `"auto"` | 默认 auto 仅在 iTerm2/Ghostty/Kitty 发桌面通知、其余终端静默；bell 字符可穿透远程/多路复用终端，任何环境下可靠 |
 | 7 | `outputStyle` | `"Explanatory"` | `"default"` | 教学风格（★ Insight 块），置于用户全局层对所有项目生效 |
 
