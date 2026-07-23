@@ -17,8 +17,8 @@ Claude Code 的外部代码审查 skill：实现或测试编写完成后，调�
 ## 依赖
 
 - [Codex CLI](https://github.com/openai/codex)：`npm install -g @openai/codex`，需已登录
-- 可选：herdr —— 交互式 pane 模式需要；未安装时自动回退到 `codex exec` 模式
-- 可选：`jq` —— herdr 模式下解析 pane ID 使用
+- 可选：[herdr](https://herdr.dev)（[GitHub](https://github.com/ogulcancelik/herdr)）—— 交互式 pane 模式需要，`curl -fsSL https://herdr.dev/install.sh | sh` 或 `brew install herdr`；未安装时自动回退到 `codex exec` 模式，功能完整
+- 可选：`jq` —— herdr 模式下解析 pane ID 使用，系统包管理器安装即可（`apt install jq` / `brew install jq`）
 
 ## 安装
 
