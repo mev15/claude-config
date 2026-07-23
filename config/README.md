@@ -50,3 +50,7 @@
 ## 全局 CLAUDE.md
 
 编码行为准则可参考 [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)（Karpathy 对 LLM 编码通病观察的提炼：Think Before Coding / Simplicity First / Surgical Changes / Goal-Driven Execution），按自己的偏好放入全局 `~/.claude/CLAUDE.md` 即可。
+
+## MCP 与 Plugin
+
+全局启用的 MCP server 与 plugin 清单及安装方式见 [mcp-plugin/](mcp-plugin/)。

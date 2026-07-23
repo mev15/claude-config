@@ -2,7 +2,7 @@
 
 > Claude Code configuration hub — skills, settings, MCP/plugin config, CLAUDE.md — synced across machines.
 
-Claude Code 配置库：集中维护 skills、config（settings）、MCP/plugin、CLAUDE.md 等配置，用于多机同步，也可按需取用。内容经审查后逐步收录：`skills/` 下是原创 skill，`third-party/` 收录经过审查的外部 skill（附出处与许可），`config/` 是全局配置与默认值对照及状态栏配置（见 [config/README.md](config/README.md)）。
+Claude Code 配置库：集中维护 skills、config（settings）、MCP/plugin、CLAUDE.md 等配置，用于多机同步，也可按需取用。内容经审查后逐步收录：`skills/` 下是原创 skill，`third-party/` 收录经过审查的外部 skill（附出处与许可），`config/` 是全局配置与默认值对照及 MCP/plugin、状态栏等配置（见 [config/README.md](config/README.md)）。
 
 ## Skills
 
