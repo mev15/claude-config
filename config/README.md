@@ -1,4 +1,4 @@
-# 全局主动配置对照（~/.claude/settings.json）
+# 全局主动配置对照
 
 > 主动配置项与系统默认值的对照，用于新机器同步核对。默认值以官方 settings JSON Schema（`json.schemastore.org/claude-code-settings.json`）为准，核对日期 2026-07-23。
 
@@ -46,3 +46,7 @@
 \* 当前版本语义为「缺省或 `true` 均开启」，显式 `true` 属与默认一致的意图声明（历史版本默认为关）。
 
 \*\* `preferredNotifChannel` 在 `~/.claude.json` 另有一份同值副本（CLI 两处存储），以 settings.json 为准。
+
+## 全局 CLAUDE.md
+
+编码行为准则可参考 [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)（Karpathy 对 LLM 编码通病观察的提炼：Think Before Coding / Simplicity First / Surgical Changes / Goal-Driven Execution），按自己的偏好放入全局 `~/.claude/CLAUDE.md` 即可。
