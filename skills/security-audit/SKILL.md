@@ -1,6 +1,6 @@
 ---
 name: security-audit
-description: Use when reviewing third-party code (cloned repos, npm packages, Rust crates, Python packages) for backdoors, malware, private key theft, supply chain attacks, or any malicious behavior before using or deploying the code. When invoked without arguments, audit the current working directory's project code and its supply chain dependencies. Triggers on "audit this repo", "is this safe", "check for backdoors", "review before use", "/security-audit"
+description: Use when reviewing third-party code (cloned repos, npm packages, Rust crates, Python packages) for backdoors, malware, private key theft, supply chain attacks, or any malicious behavior before using or deploying the code. When invoked without arguments, audit the current working directory's project code and its supply chain dependencies. When given a GitHub URL or local path, clone into a temp directory / enter it and audit that target. Triggers on "audit this repo", "is this safe", "check for backdoors", "review before use", "/security-audit", "/security-audit <repo-url>"
 ---
 
 # Security Audit for Third-Party Code
@@ -20,6 +20,23 @@ If this skill is invoked **without any arguments or prompt** (e.g., user just ty
 3. **L3: Deep audit** any dependencies flagged as suspicious in L2
 
 Do NOT ask the user what to audit — just proceed with the current directory. This is the expected behavior when no explicit target is given.
+
+## Target Argument Handling
+
+If invoked **with a target argument** (e.g. `/security-audit <github-url>`):
+
+- **GitHub URL or `owner/repo`**: clone into a fresh temp directory, then run the full audit (L1 → L2 → L3) there:
+
+  ```bash
+  AUDIT_DIR="$(mktemp -d)" && git clone <url> "$AUDIT_DIR/repo" && cd "$AUDIT_DIR/repo"
+  ```
+
+  - Never clone into the current project directory.
+  - Submodules are not fetched by default — keep it that way. `.gitmodules` is itself an audit target; never run `git submodule update --init` before reviewing it.
+  - **After cloning, execute nothing from the repo** except the safe-download commands defined below (`npm install --ignore-scripts` / `cargo vendor` / `pip download`). Audit first, install later — always.
+- **Local path**: audit that directory directly, no cloning.
+
+Record the audited commit SHA (`git rev-parse HEAD`) in the report header — the verdict is pinned to that revision.
 
 ## When to Use
 
@@ -323,6 +340,7 @@ awk 'length > 500 {print FILENAME ":" NR}' $(find . -name "*.js" -o -name "*.ts"
 - **Risk Level:** CRITICAL / HIGH / MEDIUM / LOW / CLEAN
 - **Recommendation:** DO NOT USE / USE WITH CAUTION / SAFE
 - **Ecosystem:** Node.js / Rust / Python
+- **Audited Commit:** [commit SHA]
 - **Audit Layers Completed:** L1 + L2 [+ L3 for: package-x, package-y]
 
 ## Critical Findings

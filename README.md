@@ -9,7 +9,7 @@ Claude Code 配置库：集中维护 skills、config（settings）、MCP/plugin�
 | Skill | 说明 | 触发 |
 |-------|------|------|
 | [codex-review-loop](skills/codex-review-loop/) | 外部 Codex CLI 审查关卡：只读沙箱审查 + 严格修改边界 + 循环修复验证，herdr 交互式 pane / codex exec 双模式 | "codex review"、"外部审查" |
-| [security-audit](skills/security-audit/) | 第三方代码安全审计：后门 / 窃钥 / 供应链攻击六阶段扫描，L1 源码 → L2 依赖 → L3 深审 | "audit this repo"、"is this safe" |
+| [security-audit](skills/security-audit/) | 第三方代码安全审计：后门 / 窃钥 / 供应链攻击六阶段扫描，L1 源码 → L2 依赖 → L3 深审 | "audit this repo"、"is this safe"、"/security-audit <repo-url>" |
 
 ## 安装
 
