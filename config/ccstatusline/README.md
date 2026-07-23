@@ -5,14 +5,14 @@
 - **第 1 行**：模型名 · 上下文用量条（slider）· 会话用量条（slider）· 重置倒计时 · 周用量
 - **第 2 行**：git 根目录 · 分支 · 变更统计
 
-## 安装（新机器）
+## 安装
 
 ```bash
 # 1. 前置：Node.js（npx 可用）
 
 # 2. 放置本配置
-#    ⚠️ 若该机器已有 ~/.config/ccstatusline/settings.json,cp 会整体覆盖:
-#    先备份并 diff,决定保留哪边的差异(如各机自己的颜色微调、installation 键)再覆盖
+#    ⚠️ 若本机已有 ~/.config/ccstatusline/settings.json,cp 会整体覆盖:
+#    先备份并 diff,决定保留哪边的差异(如已有的颜色微调、installation 键)再覆盖
 mkdir -p ~/.config/ccstatusline
 cp settings.json ~/.config/ccstatusline/settings.json
 
@@ -30,4 +30,4 @@ cp settings.json ~/.config/ccstatusline/settings.json
 npx ccstatusline@latest
 ```
 
-改完若想同步回本仓库：把 `~/.config/ccstatusline/settings.json` 拷回本目录提交（过审查后推送）。
+改完若想留存：把 `~/.config/ccstatusline/settings.json` 拷回自己的配置仓库。

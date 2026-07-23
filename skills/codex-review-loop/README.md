@@ -22,7 +22,7 @@ Claude Code 的外部代码审查 skill：实现或测试编写完成后，调�
 
 ## 安装
 
-本 skill 已并入 [claude-config](https://github.com/mev15/claude-config) 配置库，用仓库根目录的 `install.sh` 统一安装，或手动软链：
+本 skill 是 [claude-config](https://github.com/mev15/claude-config) 配置库的一部分，用仓库根目录的 `install.sh` 统一安装，或手动软链：
 
 ```bash
 git clone https://github.com/mev15/claude-config.git

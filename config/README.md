@@ -1,10 +1,10 @@
 # 全局主动配置对照
 
-> 主动配置项与系统默认值的对照，用于新机器同步核对。默认值以官方 settings JSON Schema（`json.schemastore.org/claude-code-settings.json`）为准，核对日期 2026-07-23。
+> 主动配置项与系统默认值的对照，便于按需合并采用。默认值以官方 settings JSON Schema（`json.schemastore.org/claude-code-settings.json`）为准，核对日期 2026-07-23。
 
 ## 可直接合并的配置片段（权威内容）
 
-将以下键**合并**进目标机器的 `~/.claude/settings.json`（注意是合并不是覆盖——`permissions` 下已有的 `allow` 等键保持不动）：
+将以下键**合并**进 `~/.claude/settings.json`（注意是合并不是覆盖——`permissions` 下已有的 `allow` 等键保持不动）：
 
 ```json
 {
