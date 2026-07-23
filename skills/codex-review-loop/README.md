@@ -22,11 +22,11 @@ Claude Code 的外部代码审查 skill：实现或测试编写完成后，调�
 
 ## 安装
 
-本 skill 已并入 [mev15-skills](https://github.com/mev15/mev15-skills) 合集，用仓库根目录的 `install.sh` 统一安装，或手动软链：
+本 skill 已并入 [claude-config](https://github.com/mev15/claude-config) 配置库，用仓库根目录的 `install.sh` 统一安装，或手动软链：
 
 ```bash
-git clone https://github.com/mev15/mev15-skills.git
-ln -s "$PWD/mev15-skills/skills/codex-review-loop" ~/.claude/skills/codex-review-loop
+git clone https://github.com/mev15/claude-config.git
+ln -s "$PWD/claude-config/skills/codex-review-loop" ~/.claude/skills/codex-review-loop
 ```
 
 ## 使用

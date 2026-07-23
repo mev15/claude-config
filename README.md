@@ -1,8 +1,8 @@
-# mev15-skills
+# claude-config
 
-> Claude Code skills collection — original skills plus curated third-party ones.
+> Claude Code configuration hub — skills, settings, MCP/plugin config, CLAUDE.md — synced across machines.
 
-Claude Code skill 合集：`skills/` 下是原创 skill，`third-party/` 收录经过审查的外部 skill（附出处与许可）。
+Claude Code 配置库：集中维护 skills、config（settings）、MCP/plugin、CLAUDE.md 等配置，用于多机同步。内容经隐私审查后逐步入库，当前已收录 skills 部分：`skills/` 下是原创 skill，`third-party/` 收录经过审查的外部 skill（附出处与许可）。
 
 ## Skills
 
@@ -14,8 +14,8 @@ Claude Code skill 合集：`skills/` 下是原创 skill，`third-party/` 收录�
 ## 安装
 
 ```bash
-git clone https://github.com/mev15/mev15-skills.git
-cd mev15-skills && ./install.sh   # 软链 skills/ 下全部 skill 到 ~/.claude/skills/
+git clone https://github.com/mev15/claude-config.git
+cd claude-config && ./install.sh   # 软链 skills/ 下全部 skill 到 ~/.claude/skills/
 ```
 
 或只装单个 skill：
