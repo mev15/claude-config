@@ -36,17 +36,13 @@ claude mcp add -s user --transport http dune https://api.dune.com/mcp/v1 --heade
 | rust-analyzer-lsp | claude-plugins-official | Rust LSP：定义 / 引用 / 诊断级代码导航 | `rustup component add rust-analyzer` |
 | typescript-lsp | claude-plugins-official | TypeScript LSP | `npm install -g typescript-language-server typescript` |
 | remember | claude-plugins-official | 分层会话记忆：会话开始注入历史，过程自动采集，`.remember/` 下按日 / 周滚动压缩 | 无 |
-| codex | openai-codex | `/codex` 命令集（review / rescue / transfer 等）+ codex-rescue agent | [Codex CLI](https://github.com/openai/codex) 已安装并登录 |
 
-安装（官方 marketplace 开箱即用，第三方 marketplace 先注册）：
+安装（均来自官方 marketplace，开箱即用）：
 
 ```bash
 claude plugin install rust-analyzer-lsp@claude-plugins-official
 claude plugin install typescript-lsp@claude-plugins-official
 claude plugin install remember@claude-plugins-official
-
-claude plugin marketplace add openai/codex-plugin-cc
-claude plugin install codex@openai-codex
 ```
 
 安装完成后 `~/.claude/settings.json` 中对应的键如下，可用于核对或直接同步：
@@ -56,13 +52,7 @@ claude plugin install codex@openai-codex
   "enabledPlugins": {
     "rust-analyzer-lsp@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "remember@claude-plugins-official": true,
-    "codex@openai-codex": true
-  },
-  "extraKnownMarketplaces": {
-    "openai-codex": {
-      "source": { "source": "github", "repo": "openai/codex-plugin-cc" }
-    }
+    "remember@claude-plugins-official": true
   }
 }
 ```
