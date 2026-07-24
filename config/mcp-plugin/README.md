@@ -29,6 +29,8 @@ claude mcp add -s user --transport http dune https://api.dune.com/mcp/v1 --heade
 
 验证：`claude mcp list` 逐个检查连通性。注意其输出会回显完整启动命令（含内联凭证），公开粘贴前先脱敏。
 
+其中 context7 与 github 另有官方插件形态（`context7@claude-plugins-official`、`github@claude-plugins-official`），与上表 MCP server 形态功能等价，二选一即可：插件形态免 Docker 与手动凭证管理，适合批量部署的机器；MCP 形态可自定义运行方式与凭证作用域。
+
 ## Plugins
 
 | plugin | marketplace | 用途 | 前置依赖 |
