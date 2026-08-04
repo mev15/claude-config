@@ -11,6 +11,10 @@ Claude Code 配置库：集中维护 skills、config（settings）、MCP/plugin�
 | [codex-review-loop](skills/codex-review-loop/) | 外部 Codex CLI 审查关卡：只读沙箱审查 + 严格修改边界 + 循环修复验证，herdr 交互式 pane / codex exec 双模式 | "codex review"、"外部审查" |
 | [security-audit](skills/security-audit/) | 第三方代码安全审计：后门 / 窃钥 / 供应链攻击六阶段扫描，L1 源码 → L2 依赖 → L3 深审 | "audit this repo"、"is this safe"、"/security-audit <repo-url>" |
 
+## herdr
+
+[herdr/](herdr/) — 无头服务器 + mosh/ssh 远程场景下的 herdr agent 状态提醒三件套：BEL 提示音 shim（穿 mosh 的终端铃）、toast 弹窗配置、终端标题状态面板 daemon（`⠹ node 🟡2 🔴1 🟢3`）。详见 [herdr/README.md](herdr/README.md)。
+
 ## 安装
 
 ```bash

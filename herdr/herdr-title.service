@@ -1,0 +1,15 @@
+# herdr agent 状态 → 外层终端标题(OSC 0) 守护
+# 脚本: /root/.local/bin/herdr-title-daemon.sh
+[Unit]
+Description=herdr agent status to terminal title
+After=network.target
+
+[Service]
+Type=simple
+Environment=HOME=/root
+ExecStart=/root/.local/bin/herdr-title-daemon.sh
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

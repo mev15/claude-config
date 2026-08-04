@@ -1,0 +1,13 @@
+#!/bin/bash
+# herdr BEL shim — 顶替 pw-play：无头服务器无音频出口，把 herdr 提示音转成终端铃(BEL)
+# BEL 由 mosh/ssh 转发到本地终端发声。herdr 传入的参数(临时 MP3 路径)忽略。
+# herdr 播放器探测顺序: paplay(真身,无 PulseAudio 必失败) -> pw-play(本 shim) -> ffplay/mpg123/mpv
+# 依据 herdrdev/herdr src/sound.rs: 按 PATH 查找、exit 0 即成功、每次重新探测。
+date +%s > /root/.config/herdr/.bel-shim-last 2>/dev/null
+{ printf '\a' > /dev/tty; } 2>/dev/null && exit 0
+# 无控制终端时兜底：向所有 herdr client(有 tty 的 herdr 进程)的终端响铃
+ok=
+for t in $(ps -o tty= -C herdr 2>/dev/null | grep -v '^?' | sort -u); do
+  printf '\a' > "/dev/$t" 2>/dev/null && ok=1
+done
+[ -n "$ok" ]
