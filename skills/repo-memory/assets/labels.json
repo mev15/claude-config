@@ -1,0 +1,12 @@
+[
+  {"name": "bug",           "color": "d73a4a", "description": "缺陷"},
+  {"name": "feature",       "color": "1d76db", "description": "新功能"},
+  {"name": "chore",         "color": "bfd4f2", "description": "维护/杂务"},
+  {"name": "idea",          "color": "c5def5", "description": "未成熟想法"},
+  {"name": "P0",            "color": "b60205", "description": "当前要做"},
+  {"name": "P1",            "color": "fbca04", "description": "下一批"},
+  {"name": "P2",            "color": "c2e0c6", "description": "有空再说"},
+  {"name": "agent/ready",   "color": "0e8a16", "description": "授权 agent 执行（验收标准已就绪）"},
+  {"name": "agent/wip",     "color": "5319e7", "description": "agent 执行中"},
+  {"name": "agent/blocked", "color": "e99695", "description": "agent 卡住，待人裁决"}
+]
