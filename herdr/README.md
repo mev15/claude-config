@@ -6,7 +6,7 @@ herdr 跑在无头服务器上、通过 mosh/ssh 远程使用时，agent 状态�
 2. **toast 弹窗默认关闭**；
 3. **窗口标题无全局状态**——herdr 只转发焦点 pane 的标题，后台 pane 的 agent 在干什么外层完全不可见。
 
-本目录三个文件分别补上这三个断点。已在多台 Ubuntu 无头服务器 + mosh 远程场景验证。
+以下三节分别补上这三个断点（第 3 节已迁移为 herdr 插件）。已在多台 Ubuntu 无头服务器 + mosh 远程场景验证。
 
 ## 1. `pw-play` — BEL 提示音 shim
 
@@ -33,32 +33,20 @@ delivery = "herdr"
 
 > 为什么不用 `delivery = "terminal"`：该模式发 OSC 9/99 系统通知序列,仅支持 iTerm2/WezTerm/Ghostty/Kitty 且要求终端身份变量可见;mosh 是状态同步器而非字节管道,不透传自定义 OSC——mosh 链路下此路不通,BEL shim 是等效替代。
 
-## 3. `herdr-title-daemon.sh` + `herdr-title.service` — 标题状态面板
+## 3. 标题状态面板 — 已迁移为 herdr 插件
 
-每秒轮询 `herdr agent list`,把全部 agent 的状态计数写进外层终端标题（OSC 0,穿 mosh/ssh）：
-
-```
-⠹ mynode 🟡2 🔴1 🔵1 🟢3
-```
-
-- `🟡` working `🔴` blocked（等输入） `🔵` done（完成待看） `🟢` idle `⚪` unknown,非零才显示;
-- 需要关注的状态靠前;有 working/blocked 时开头的 braille 帧每秒转一格;
-- 配色语义对齐 herdr 官方 `state_dot()`（黄=working、红=blocked、青=done、绿=idle）;标题栏不渲染 ANSI 色,彩色来自 emoji 字形本身;
-- 主机标识自动取 tailscale MagicDNS 节点名（回退 hostname）,一份脚本多机通用;
-- 写往所有持有 tty 的 herdr client——多终端同时 attach 时每块屏幕同步;
-- agent 无关:状态检测由 herdr 在 pane 层完成,claude/codex 等一视同仁。
+原 `herdr-title-daemon.sh` + `herdr-title.service`（1s 轮询 + 旁路直写 `/dev/tty` 的 systemd 方案）已于 2026-08-10 退役,脚本内容见 git 历史。替代方案为 fork 插件 [mev15/herdr-ghostty-tab-title](https://github.com/mev15/herdr-ghostty-tab-title)（上游 [wjarka/herdr-ghostty-tab-title](https://github.com/wjarka/herdr-ghostty-tab-title),叠加 tailscale 节点名 label、braille spinner、紧凑间距、🔵 done 等生产默认）：
 
 ```bash
-cp herdr-title-daemon.sh ~/.local/bin/ && chmod +x ~/.local/bin/herdr-title-daemon.sh
-sudo cp herdr-title.service /etc/systemd/system/
-sudo systemctl daemon-reload && sudo systemctl enable --now herdr-title.service
+herdr plugin install mev15/herdr-ghostty-tab-title --yes
 ```
+
+相比 daemon：事件驱动替代每秒轮询;走 herdr 官方 `client.window_title.set` API 而非从进程表反查 tty,`herdr --remote`（server 无 tty）拓扑照常工作;自带单元与集成测试。配色语义仍对齐 herdr 官方 `state_label_color()`（青 done→🔵）。
 
 ## 依赖与假设
 
-- herdr ≥ 0.8.0（sound 探测顺序、`agent list` JSON 字段以此版本为准）
-- `jq`；`tailscale`（可选,仅用于节点名）
-- 文件内路径假设 root 用户（`/root/...`）,其他用户请按环境调整脚本与 unit 中的路径
+- herdr ≥ 0.8.0（sound 探测顺序以此版本为准）
+- 文件内路径假设 root 用户（`/root/...`）,其他用户请按环境调整
 
 ## 已知限制
 
