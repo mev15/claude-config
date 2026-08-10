@@ -6,7 +6,7 @@ herdr 跑在无头服务器上、通过 mosh/ssh 远程使用时，agent 状态�
 2. **toast 弹窗默认关闭**；
 3. **窗口标题无全局状态**——herdr 只转发焦点 pane 的标题，后台 pane 的 agent 在干什么外层完全不可见。
 
-以下三节分别补上这三个断点（第 3 节已迁移为 herdr 插件）。已在多台 Ubuntu 无头服务器 + mosh 远程场景验证。
+以下三节分别补上这三个断点。已在多台 Ubuntu 无头服务器 + mosh 远程场景验证。
 
 ## 1. `pw-play` — BEL 提示音 shim
 
@@ -33,15 +33,19 @@ delivery = "herdr"
 
 > 为什么不用 `delivery = "terminal"`：该模式发 OSC 9/99 系统通知序列,仅支持 iTerm2/WezTerm/Ghostty/Kitty 且要求终端身份变量可见;mosh 是状态同步器而非字节管道,不透传自定义 OSC——mosh 链路下此路不通,BEL shim 是等效替代。
 
-## 3. 标题状态面板 — 已迁移为 herdr 插件
+## 3. 标题状态面板 — herdr 插件
 
-原 `herdr-title-daemon.sh` + `herdr-title.service`（1s 轮询 + 旁路直写 `/dev/tty` 的 systemd 方案）已于 2026-08-10 退役,脚本内容见 git 历史。替代方案为 fork 插件 [mev15/herdr-ghostty-tab-title](https://github.com/mev15/herdr-ghostty-tab-title)（上游 [wjarka/herdr-ghostty-tab-title](https://github.com/wjarka/herdr-ghostty-tab-title),叠加 tailscale 节点名 label、braille spinner、紧凑间距、🔵 done 等生产默认）：
+[mev15/herdr-ghostty-tab-title](https://github.com/mev15/herdr-ghostty-tab-title)（fork 自 [wjarka/herdr-ghostty-tab-title](https://github.com/wjarka/herdr-ghostty-tab-title),叠加 tailscale 节点名 label、braille spinner、紧凑间距、🔵 done 等生产默认）,把全部 agent 的状态计数写进外层终端标题（OSC 0,穿 mosh/ssh）：
+
+```
+⠹ node 🟡2 🔴1 🔵1
+```
 
 ```bash
 herdr plugin install mev15/herdr-ghostty-tab-title --yes
 ```
 
-相比 daemon：事件驱动替代每秒轮询;走 herdr 官方 `client.window_title.set` API 而非从进程表反查 tty,`herdr --remote`（server 无 tty）拓扑照常工作;自带单元与集成测试。配色语义仍对齐 herdr 官方 `state_label_color()`（青 done→🔵）。
+事件驱动,经 herdr 官方 `client.window_title.set` API 设置标题,`herdr --remote`（server 无 tty）拓扑照常工作;配色语义对齐 herdr 官方 `state_label_color()`（青 done→🔵）;主机标识默认取 tailscale MagicDNS 节点名（回退 hostname）。
 
 ## 依赖与假设
 
