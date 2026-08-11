@@ -16,6 +16,10 @@ Claude Code 配置库：集中维护 skills、config（settings）、MCP/plugin�
 
 [herdr/](herdr/) — 无头服务器 + mosh/ssh 远程场景下的 herdr agent 状态提醒三件套：BEL 提示音 shim（穿 mosh 的终端铃）、toast 弹窗配置、终端标题状态面板（[mev15/herdr-ghostty-tab-title](https://github.com/mev15/herdr-ghostty-tab-title) fork 插件，`⠹ node 🟡2 🔴1 🔵1`）。详见 [herdr/README.md](herdr/README.md)。另有 [herdr/hfork/](herdr/hfork/)：`/hfork` 命令,在新 herdr tab 中 fork 当前 Claude Code 会话（hook 拦截 + slash command 降级双路径）。
 
+## tg-send
+
+[tg-send/](tg-send/) — 统一 Telegram 通知管道：零依赖 bash CLI（仅需 curl），凭据集中 `~/.config/tg-send/`（一个 bot 一个 env 文件 + default symlink 切换默认），Claude Code 的 cron / skill / hook 与任意脚本共用同一入口，多 bot 发件身份天然分线。详见 [tg-send/README.md](tg-send/README.md)。
+
 ## 安装
 
 ```bash

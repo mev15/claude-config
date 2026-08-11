@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# tg-send — 统一 Telegram 通知管道
+# 用法: tg-send [-b bot] [-c chat_id] <消息>
+#       echo <消息> | tg-send [-b bot]
+# bot 配置: ~/.config/tg-send/<bot>.env（TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID）
+#           不指定 -b 时用 default.env（symlink 指向实际 bot）
+set -euo pipefail
+
+CONF_DIR="${TG_SEND_CONF_DIR:-$HOME/.config/tg-send}"
+
+usage() {
+  echo "Usage: tg-send [-b bot] [-c chat_id] <message>"
+  echo "       echo <message> | tg-send [-b bot]"
+  echo "Bots:  $(ls "$CONF_DIR"/*.env 2>/dev/null | xargs -r -n1 basename | sed 's/\.env$//' | tr '\n' ' ')"
+}
+
+bot="default"
+chat=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -b) bot="$2"; shift 2 ;;
+    -c) chat="$2"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    --) shift; break ;;
+    -*) echo "tg-send: unknown option: $1" >&2; usage >&2; exit 1 ;;
+    *) break ;;
+  esac
+done
+
+conf="$CONF_DIR/$bot.env"
+if [ ! -f "$conf" ]; then
+  echo "tg-send: bot config not found: $conf" >&2
+  exit 1
+fi
+# shellcheck source=/dev/null
+. "$conf"
+
+: "${TELEGRAM_BOT_TOKEN:?tg-send: TELEGRAM_BOT_TOKEN missing in $conf}"
+chat="${chat:-${TELEGRAM_CHAT_ID:-}}"
+[ -n "$chat" ] || { echo "tg-send: no chat_id (set TELEGRAM_CHAT_ID in $conf or pass -c)" >&2; exit 1; }
+
+if [ $# -gt 0 ]; then text="$*"; else text="$(cat)"; fi
+[ -n "$text" ] || { echo "tg-send: empty message" >&2; exit 1; }
+# Telegram 单条上限 4096 字符，留余量截断
+if [ "${#text}" -gt 4000 ]; then text="${text:0:4000}
+…(truncated)"; fi
+
+resp=$(curl -s --max-time 15 --retry 2 -X POST \
+  "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+  -d chat_id="$chat" --data-urlencode text="$text") || {
+  echo "tg-send: network error (curl exit $?)" >&2
+  exit 1
+}
+
+case "$resp" in
+  '{"ok":true'*) exit 0 ;;
+  *) echo "tg-send: API error: $resp" >&2; exit 1 ;;
+esac
