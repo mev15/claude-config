@@ -12,9 +12,9 @@ description: 用 GitHub issue 做项目的云 memory：把本地 memory/文档�
 ## 协议
 
 1. **issue 是待办记忆的唯一事实源**：工作中发现新 bug / 想到新 feature，先建 issue 再动手（这就是记忆写入）；本地 memory **不留正文副本，也不维护 issue 编号的指针/清单**——静态指针跟不上云端增删必腐。防分裂靠目标仓库 CLAUDE.md 的纪律段（init 第 4 步）；本地 memory 只收跨任务通用知识（偏好/方法论/机制）。
-2. **Label 三组**（10 个，见 assets/labels.json）：类型 `bug|feature|chore|idea`、优先级 `P0|P1|P2`（P0=当前要做、P1=下一批、P2=有空再说）、`agent/ready|wip|blocked`（harness 调度状态机）。
+2. **Label 三组**（11 个，见 assets/labels.json）：类型 `bug|feature|chore|idea`、优先级 `P0|P1|P2`（P0=当前要做、P1=下一批、P2=有空再说）、`agent/ready|wip|done|blocked`（harness 调度状态机）。
 3. **PR 规范**：conventional 标题，正文必带 `Fixes #N`，squash merge——合并即自动关 issue，记忆状态闭环零手工。
-4. **多 harness 并发纪律**：`agent/ready` 是唯一授权开关（用户不打标，agent 不主动执行）；认领时打 `agent/wip` + 留认领评论，防止多机 harness 撞车；卡住打 `agent/blocked` + 评论卡点，停下等裁决。
+4. **多 harness 并发纪律**：`agent/ready` 是唯一授权开关（用户不打标，agent 不主动执行）；认领时打 `agent/wip` + 留认领评论，防止多机 harness 撞车；完工提 PR 后把 `agent/wip` 换成 `agent/done`（表示 agent 侧工作完毕，等 merge/验收，merge 自动关 issue 后标签随之归档）；卡住打 `agent/blocked` + 评论卡点，停下等裁决。
 5. **信息分层**：issue 正文 = 目标与验收标准；**📎 归档评论 = 排查素材与历史数据**——「做这个 issue 时才需要」的内容全下沉评论（须自足：数据、地址、教训写全，别的机器没有本地 memory）。**closed issue = 修复档案**：已完成修复可 backfill（正文标 📦 + 保留 tx/commit/关键数字做检索锚点，`gh issue close N --reason completed`，与 PR 自动闭环天然可区分）；排查「这症状修过吗」用 `gh issue list --state all --search "<关键词|tx>"`。
 
 ## 操作手册
@@ -43,7 +43,7 @@ gh repo edit <owner/repo> --enable-squash-merge --enable-merge-commit=false --en
 
 注：`bug` label 与 GitHub 原生默认 label 撞名属预期（--force 幂等复用改描述）；其余原生 9 个默认 label 不冲突可留可清。
 
-验证：`gh label list` 见 10 个 label；GitHub 开新 issue 出现 Bug/Feature 表单；仓库 CLAUDE.md 含纪律段。
+验证：`gh label list` 见 11 个 label；GitHub 开新 issue 出现 Bug/Feature 表单；仓库 CLAUDE.md 含纪律段。
 
 ### migrate — 本地记忆迁移成 issue（核心）
 
@@ -94,7 +94,7 @@ gh search issues "owner:<owner> state:open label:P0" --limit 50 \
 1. `gh issue view N` 读正文；验收标准缺失或不可验证 → 先让用户补，不猜。
 2. （harness 场景）确认无 `agent/wip` 后认领：打 `agent/wip` + 认领评论。
 3. 分支 `fix/N-<slug>` 或 `feat/N-<slug>`，实现 + 测试，对验收标准逐条自验。
-4. PR：conventional 标题，正文 = 变更说明 + `Fixes #N` + 验证结果；CI 绿后 squash merge，确认 issue 自动关闭。
+4. PR：conventional 标题，正文 = 变更说明 + `Fixes #N` + 验证结果；（harness 场景）提 PR 后把 `agent/wip` 换成 `agent/done`；CI 绿后 squash merge，确认 issue 自动关闭。
 5. 过程中的新发现（其他 bug、技术债）→ 顺手建 issue，这是记忆写入的一部分。
 
 ## harness 消费协议（多机共享的读写约定)

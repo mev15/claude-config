@@ -8,5 +8,6 @@
   {"name": "P2",            "color": "c2e0c6", "description": "有空再说"},
   {"name": "agent/ready",   "color": "0e8a16", "description": "授权 agent 执行（验收标准已就绪）"},
   {"name": "agent/wip",     "color": "5319e7", "description": "agent 执行中"},
+  {"name": "agent/done",    "color": "0052cc", "description": "agent 执行完毕，PR 待合并/验收"},
   {"name": "agent/blocked", "color": "e99695", "description": "agent 卡住，待人裁决"}
 ]
