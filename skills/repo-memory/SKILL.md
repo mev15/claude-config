@@ -66,8 +66,8 @@ gh repo edit <owner/repo> --enable-squash-merge --enable-merge-commit=false --en
 **流程**：
 1. 扫描 → 提取候选（标题、类型、正文素材、来源文件:行）。
 2. `gh issue list -R <owner/repo> --state all --limit 200` 拉现有 issue，按标题/语义去重。
-3. **生成迁移清单（标题 | type | 来源）给用户确认——批量创建前必须过目**。
-4. 确认后逐条 `gh issue create`：bug 按「现象与期望 + 复现步骤」组织，feature 按「目标 + 验收标准 + 上下文」组织；信息不足的字段如实写「待细化」，不编造。打上类型标签（`bug/feature/chore/idea`），能判断的加 `P0/P1/P2`。
+3. **生成迁移清单给用户确认——批量创建前必须过目**：分两组列出——open 候选（标题 | 类型 | 来源）与 📦 closed 档案候选（已完成事项：标题 | 修复 commit | 来源）。
+4. 确认后逐条 `gh issue create`：bug 按「现象与期望 + 复现步骤」组织，feature 按「目标 + 验收标准 + 上下文」组织；信息不足的字段如实写「待细化」，不编造。打上类型标签（`bug/feature/chore/idea`），能判断的加 `P0/P1/P2`。📦 档案组按协议 5 组织正文（📦 标注 + 问题/根因/修复/验证 + tx/commit 锚点），只打类型不打优先级，创建后立即 `gh issue close N --reason completed`。
 5. 素材下沉与清源：每条 issue 把「做它时才需要」的排查素材（数据、地址、教训、原始数字）以 **📎 归档评论**附上；然后**删除**已迁移的源 memory 文件/条目——跨任务通用的坑与方法浓缩进 feedback 类 memory 或仓库 CLAUDE.md，本地不留任何 issue 编号引用（协议 1）。输出迁移报告（成功清单 + 跳过原因）。
 6. 顺带审计仓库 CLAUDE.md 的同类影子内容（手工维护的测试清单、外部 schema 副本、时点计数）——与本地待办副本同源同病，建议缩为指向事实源（`ls tests/`、`sqlite3 .schema`、`cargo test`），提请用户裁决后执行。
 
@@ -102,6 +102,7 @@ gh search issues "owner:<owner> state:open label:P0" --limit 50 \
 - **开工先读**：进入一个项目干活前 `gh issue list --state open`，open issue 就是这个项目的当前记忆；排查 miss/回归先 `gh issue list --state all --search "<症状|tx>"` 查修复档案。
 - **发现即写**：任何新 bug/feature/技术债，先建 issue 再继续手头工作。
 - **完成即闭环**：一律走 PR `Fixes #N`，不手动关 issue。
+- **核查闭环（例外）**：排查存量 open issue 时发现实际已被历史工作顺带修复——对照验收标准用代码/日志/测试验证后，手动 `close --reason completed` + 评论注明修复 commit 与验证证据（这与 backfill 档案同为合法的手动 close 场景）。
 - **并发防撞**：认领必打 `agent/wip`；见到别人的 `agent/wip` 就跳过。
 
 ## 边界
