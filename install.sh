@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # 将 skills/ 下所有 skill 软链到 Claude Code 的用户级 skill 目录。
+# commands/ 下的 slash command 逐文件软链到 ~/.claude/commands/（tab 补全薄壳等）。
 # DUAL_PLATFORM 名单内的 skill 同时软链到 Codex 的 skill 目录（仅当本机装有 Codex）。
 # third-party/ 不自动软链——外部 skill 需手动显式启用。
 set -euo pipefail
 
 TARGET_DIR="${SKILLS_DIR:-$HOME/.claude/skills}"
+COMMANDS_TARGET_DIR="${COMMANDS_DIR:-$HOME/.claude/commands}"
 CODEX_TARGET_DIR="${CODEX_SKILLS_DIR:-$HOME/.codex/skills}"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -26,6 +28,13 @@ mkdir -p "$TARGET_DIR"
 for src in "$REPO_DIR"/skills/*/; do
   link_skill "${src%/}" "$TARGET_DIR/$(basename "$src")"
 done
+
+if [ -d "$REPO_DIR/commands" ]; then
+  mkdir -p "$COMMANDS_TARGET_DIR"
+  for src in "$REPO_DIR"/commands/*.md; do
+    link_skill "$src" "$COMMANDS_TARGET_DIR/$(basename "$src")"
+  done
+fi
 
 if [ -d "$HOME/.codex" ] || [ -n "${CODEX_SKILLS_DIR:-}" ]; then
   mkdir -p "$CODEX_TARGET_DIR"

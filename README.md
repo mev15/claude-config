@@ -20,6 +20,10 @@ Claude Code 配置库：集中维护 skills、config（settings）、MCP/plugin�
 
 [tg-send/](tg-send/) — 统一 Telegram 通知管道：零依赖 bash CLI（仅需 curl），凭据集中 `~/.config/tg-send/`（一个 bot 一个 env 文件 + default symlink 切换默认），Claude Code 的 cron / skill / hook 与任意脚本共用同一入口，多 bot 发件身份天然分线。详见 [tg-send/README.md](tg-send/README.md)。
 
+## Commands
+
+[commands/](commands/) — 斜杠命令薄壳。Claude Code 的 tab 补全只作用于命令名、不覆盖参数区，多子命令 skill 想要参数级补全，唯一路径是把子命令升格为独立命令名：`/repo-memory-init`、`/repo-memory-migrate` 各三行，正文仅一句「调用 repo-memory skill 执行对应子命令」——协议单一事实源仍在 SKILL.md，薄壳只当补全入口。
+
 ## 安装
 
 ```bash
@@ -33,7 +37,7 @@ cd claude-config && ./install.sh   # 全部 skill 软链到 ~/.claude/skills/；
 ln -s "$PWD/skills/security-audit" ~/.claude/skills/security-audit
 ```
 
-`install.sh` 只软链 `skills/`（原创部分）；`third-party/` 中的外部 skill 需手动逐个软链，属显式启用。SKILL.md 是 Claude/Codex 共用格式，双平台名单内的 skill（repo-memory、security-audit）会同步软链到 `~/.codex/skills/`（仅当本机装有 Codex）；codex-review-loop 语义是「Claude 调 Codex 外审」，只装 Claude 侧。
+`install.sh` 软链 `skills/`（原创部分）与 `commands/`（逐文件软链到 `~/.claude/commands/`，与本机私有 command 共存）；`third-party/` 中的外部 skill 需手动逐个软链，属显式启用。SKILL.md 是 Claude/Codex 共用格式，双平台名单内的 skill（repo-memory、security-audit）会同步软链到 `~/.codex/skills/`（仅当本机装有 Codex）；codex-review-loop 语义是「Claude 调 Codex 外审」，只装 Claude 侧。
 
 ## third-party 收录规范
 
