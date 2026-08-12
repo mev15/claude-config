@@ -7,7 +7,7 @@ description: 用 GitHub issue 做项目的云 memory：把本地 memory/文档�
 
 定位：每个仓库的 open issue = 该项目待办记忆（遗留 bug、未开发 feature、技术债）的**单一事实源**。
 本地 memory 是单机私有的，issue 是所有机器共享的——任何机器上的 harness 都通过 gh CLI 读写同一份项目记忆。
-本 skill 的资源文件在 `~/.claude/skills/repo-memory/assets/`。
+本 skill 的资源文件在 SKILL.md 同目录的 `assets/` 子目录；下文命令中的 `$SKILL_DIR` 代表本 skill 目录，按本次加载 SKILL.md 的实际路径代入。
 
 ## 协议
 
@@ -25,14 +25,14 @@ description: 用 GitHub issue 做项目的云 memory：把本地 memory/文档�
 
 ```bash
 # 1) labels（幂等 upsert）
-jq -r '.[] | [.name,.color,.description] | @tsv' ~/.claude/skills/repo-memory/assets/labels.json | \
+jq -r '.[] | [.name,.color,.description] | @tsv' "$SKILL_DIR"/assets/labels.json | \
   while IFS=$'\t' read -r n c d; do
     gh label create "$n" -R <owner/repo> --color "$c" --description "$d" --force
   done
 # 2) issue/PR 模板
 mkdir -p .github
-cp -r ~/.claude/skills/repo-memory/assets/ISSUE_TEMPLATE .github/
-cp ~/.claude/skills/repo-memory/assets/PULL_REQUEST_TEMPLATE.md .github/
+cp -r "$SKILL_DIR"/assets/ISSUE_TEMPLATE .github/
+cp "$SKILL_DIR"/assets/PULL_REQUEST_TEMPLATE.md .github/
 git add .github && git commit -m "chore: add issue/PR templates (repo-memory)" && git push
 # 3) 只留 squash merge
 gh repo edit <owner/repo> --enable-squash-merge --enable-merge-commit=false --enable-rebase-merge=false

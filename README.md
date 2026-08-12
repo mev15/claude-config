@@ -24,7 +24,7 @@ Claude Code 配置库：集中维护 skills、config（settings）、MCP/plugin�
 
 ```bash
 git clone https://github.com/mev15/claude-config.git
-cd claude-config && ./install.sh   # 软链 skills/ 下全部 skill 到 ~/.claude/skills/
+cd claude-config && ./install.sh   # 全部 skill 软链到 ~/.claude/skills/；双平台名单另软链到 ~/.codex/skills/
 ```
 
 或只装单个 skill：
@@ -33,7 +33,7 @@ cd claude-config && ./install.sh   # 软链 skills/ 下全部 skill 到 ~/.claud
 ln -s "$PWD/skills/security-audit" ~/.claude/skills/security-audit
 ```
 
-`install.sh` 只软链 `skills/`（原创部分）；`third-party/` 中的外部 skill 需手动逐个软链，属显式启用。
+`install.sh` 只软链 `skills/`（原创部分）；`third-party/` 中的外部 skill 需手动逐个软链，属显式启用。SKILL.md 是 Claude/Codex 共用格式，双平台名单内的 skill（repo-memory、security-audit）会同步软链到 `~/.codex/skills/`（仅当本机装有 Codex）；codex-review-loop 语义是「Claude 调 Codex 外审」，只装 Claude 侧。
 
 ## third-party 收录规范
 
