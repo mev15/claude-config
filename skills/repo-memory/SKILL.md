@@ -1,6 +1,6 @@
 ---
 name: repo-memory
-description: 用 GitHub issue 做项目的云 memory：把本地 memory/文档里的遗留 bug、未开发 feature 迁移成结构化 issue，多机器多 harness 共享读写，修复/开发 PR 用 Fixes #N 关联闭环。触发：/repo-memory init、/repo-memory migrate、「迁移 memory 到 issue」「把遗留 bug 建成 issue」「看 backlog」「做 #N」，或用户提到 issue 管理项目记忆/待办时。
+description: "用 GitHub issue 做项目的云 memory：把本地 memory/文档里的遗留 bug、未开发 feature 迁移成结构化 issue，多机器多 harness 共享读写，修复/开发 PR 用 Fixes #N 关联闭环。触发：/repo-memory init、/repo-memory migrate、「迁移 memory 到 issue」「把遗留 bug 建成 issue」「看 backlog」「做 #N」，或用户提到 issue 管理项目记忆/待办时。"
 ---
 
 # repo-memory — GitHub issue 作为项目云 memory
