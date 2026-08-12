@@ -1,6 +1,7 @@
 ---
 name: repo-memory
 description: "用 GitHub issue 做项目的云 memory：把本地 memory/文档里的遗留 bug、未开发 feature 迁移成结构化 issue，多机器多 harness 共享读写，修复/开发 PR 用 Fixes #N 关联闭环。触发：/repo-memory init、/repo-memory migrate、「迁移 memory 到 issue」「把遗留 bug 建成 issue」「看 backlog」「做 #N」，或用户提到 issue 管理项目记忆/待办时。"
+argument-hint: "[init|migrate]"
 ---
 
 # repo-memory — GitHub issue 作为项目云 memory
@@ -18,6 +19,8 @@ description: "用 GitHub issue 做项目的云 memory：把本地 memory/文档�
 5. **信息分层**：issue 正文 = 目标与验收标准；**📎 归档评论 = 排查素材与历史数据**——「做这个 issue 时才需要」的内容全下沉评论（须自足：数据、地址、教训写全，别的机器没有本地 memory）。**closed issue = 修复档案**：已完成修复可 backfill（正文标 📦 + 保留 tx/commit/关键数字做检索锚点，`gh issue close N --reason completed`，与 PR 自动闭环天然可区分）；排查「这症状修过吗」用 `gh issue list --state all --search "<关键词|tx>"`。
 
 ## 操作手册
+
+用户裸调 `/repo-memory`（不带参数）时：不猜意图，用 AskUserQuestion 列出 init / migrate / 看 backlog 三个选项让用户选。
 
 ### init — 给仓库装标准
 
