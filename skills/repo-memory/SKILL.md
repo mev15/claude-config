@@ -14,7 +14,7 @@ description: 用 GitHub issue 做项目的云 memory：把本地 memory/文档�
 1. **issue 是待办记忆的唯一事实源**：工作中发现新 bug / 想到新 feature，先建 issue 再动手（这就是记忆写入）；本地 memory **不留正文副本，也不维护 issue 编号的指针/清单**——静态指针跟不上云端增删必腐。防分裂靠目标仓库 CLAUDE.md 的纪律段（init 第 4 步）；本地 memory 只收跨任务通用知识（偏好/方法论/机制）。
 2. **Label 三组**（11 个，见 assets/labels.json）：类型 `bug|feature|chore|idea`、优先级 `P0|P1|P2`（P0=当前要做、P1=下一批、P2=有空再说）、`agent/ready|wip|done|blocked`（harness 调度状态机）。
 3. **PR 规范**：conventional 标题，正文必带 `Fixes #N`，squash merge——合并即自动关 issue，记忆状态闭环零手工。
-4. **多 harness 并发纪律**：`agent/ready` 是唯一授权开关（用户不打标，agent 不主动执行）；认领时打 `agent/wip` + 留认领评论，防止多机 harness 撞车；完工提 PR 后把 `agent/wip` 换成 `agent/done`（表示 agent 侧工作完毕，等 merge/验收，merge 自动关 issue 后标签随之归档）；卡住打 `agent/blocked` + 评论卡点，停下等裁决。
+4. **多 harness 并发纪律**：`agent/ready` 是唯一授权开关（用户不打标，agent 不主动执行）。`agent/*` 是严格状态机——**任意时刻至多一个 label**，转移一律「换」不叠加（一条 `gh issue edit --remove-label 旧 --add-label 新`）：认领 = `ready` 换 `wip` + 留认领评论，防止多机 harness 撞车；完工提 PR = `wip` 换 `done`（agent 侧工作完毕，等 merge/验收，merge 自动关 issue 后标签随之归档）；卡住 = `wip` 换 `blocked` + 评论卡点，停下等裁决；裁决后重派 = `blocked` 换回 `ready`。高频自动化调度的仓库可加 labeled 事件触发的互斥 workflow 兜误打并存：同 issue 出现第二个 `agent/*` 时自动摘旧留新（workflow 按 issue 号 concurrency 串行 + 触发 label 已不在场则退出，避免并发互摘清零）。
 5. **信息分层**：issue 正文 = 目标与验收标准；**📎 归档评论 = 排查素材与历史数据**——「做这个 issue 时才需要」的内容全下沉评论（须自足：数据、地址、教训写全，别的机器没有本地 memory）。**closed issue = 修复档案**：已完成修复可 backfill（正文标 📦 + 保留 tx/commit/关键数字做检索锚点，`gh issue close N --reason completed`，与 PR 自动闭环天然可区分）；排查「这症状修过吗」用 `gh issue list --state all --search "<关键词|tx>"`。
 
 ## 操作手册
@@ -92,7 +92,7 @@ gh search issues "owner:<owner> state:open label:P0" --limit 50 \
 ### 做 #N — 消费与闭环
 
 1. `gh issue view N` 读正文；验收标准缺失或不可验证 → 先让用户补，不猜。
-2. （harness 场景）确认无 `agent/wip` 后认领：打 `agent/wip` + 认领评论。
+2. （harness 场景）确认无 `agent/wip` 后认领：`ready` 换 `wip`（`gh issue edit N --remove-label agent/ready --add-label agent/wip`）+ 认领评论。
 3. 分支 `fix/N-<slug>` 或 `feat/N-<slug>`，实现 + 测试，对验收标准逐条自验。
 4. PR：conventional 标题，正文 = 变更说明 + `Fixes #N` + 验证结果；（harness 场景）提 PR 后把 `agent/wip` 换成 `agent/done`；CI 绿后 squash merge，确认 issue 自动关闭。
 5. 过程中的新发现（其他 bug、技术债）→ 顺手建 issue，这是记忆写入的一部分。
@@ -103,7 +103,7 @@ gh search issues "owner:<owner> state:open label:P0" --limit 50 \
 - **发现即写**：任何新 bug/feature/技术债，先建 issue 再继续手头工作。
 - **完成即闭环**：一律走 PR `Fixes #N`，不手动关 issue。
 - **核查闭环（例外）**：排查存量 open issue 时发现实际已被历史工作顺带修复——对照验收标准用代码/日志/测试验证后，手动 `close --reason completed` + 评论注明修复 commit 与验证证据（这与 backfill 档案同为合法的手动 close 场景）。
-- **并发防撞**：认领必打 `agent/wip`；见到别人的 `agent/wip` 就跳过。
+- **并发防撞**：认领必把 `ready` 换成 `wip`；见到别人的 `agent/wip` 就跳过。
 
 ## 边界
 
