@@ -25,7 +25,7 @@
     "padding": 0
   },
   "preferredNotifChannel": "terminal_bell",
-  "outputStyle": "Explanatory"
+  "outputStyle": "Concise"
 }
 ```
 
@@ -41,7 +41,7 @@
 | 4 | `language` | `"Chinese"` | 未设置（英文） | 回复语言 + 语音听写 + 终端标签标题生成 |
 | 5 | `statusLine` | `{"type":"command",`<br>`"command":"npx -y ccstatusline@latest",`<br>`"padding":0}` | 无状态栏 | 第三方状态栏 [ccstatusline](https://github.com/sirmalloc/ccstatusline)；其自身配置与安装见 [ccstatusline/](ccstatusline/) |
 | 6 | `preferredNotifChannel` | `"terminal_bell"` \*\* | `"auto"` | 默认 auto 仅在 iTerm2/Ghostty/Kitty 发桌面通知、其余终端静默；bell 字符可穿透远程/多路复用终端，任何环境下可靠 |
-| 7 | `outputStyle` | `"Explanatory"` | `"default"` | 教学风格（★ Insight 块），置于用户全局层对所有项目生效 |
+| 7 | `outputStyle` | `"Concise"` | `"default"` | 简洁风格（结果先行、省略过程叙述），置于用户全局层对所有项目生效 |
 
 \* 当前版本语义为「缺省或 `true` 均开启」，显式 `true` 属与默认一致的意图声明（历史版本默认为关）。
 
