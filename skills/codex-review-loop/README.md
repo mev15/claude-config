@@ -13,6 +13,7 @@ Claude Code 的外部代码审查 skill：实现或测试编写完成后，调�
 - **修改边界铁律**：`code` review 只允许改源码，`test` review 只允许改测试代码，越界建议记录不执行
 - **测试先行**：test review 必须先于 code review——先确认验收标准正确，再审查实现
 - **循环验证**：每轮修复后强制 re-review，最多 5 轮，通过条件为无 Critical 且无 Important 问题
+- **每次 review 独占工作目录**：diff / case 文档 / prompt / 报告全部放在 `/tmp/codex-review/<repo>-<branch>-<时间戳>/` 下，同机多个 Claude/herdr 会话并发 review 互不覆盖
 
 ## 依赖
 

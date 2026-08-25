@@ -47,25 +47,43 @@ description: Use when code implementation or test writing is complete and needs 
 
 ### Step 1: Prepare Review Context
 
+**先建独占工作目录（铁律）：** 同一台机器上常有多个 Claude/herdr 会话并发跑 review，固定路径（如 `/tmp/codex-review-input.diff`）会被互相覆盖、让 codex 审到别人的 diff。每次 review 会话开始时创建一个唯一目录，后续所有文件都放在里面：
+
+```bash
+REVIEW_DIR="/tmp/codex-review/$(basename "$PWD")-$(git branch --show-current 2>/dev/null | tr '/' '-')-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$REVIEW_DIR/cases" && echo "$REVIEW_DIR"
+```
+
+记住 `$REVIEW_DIR` 的实际值（每次 Bash 调用是新 shell，变量不保留）。目录内约定：
+
+| 文件 | 用途 |
+|------|------|
+| `$REVIEW_DIR/input.diff` | 送审 diff（test/code 阶段各自重新导出覆盖） |
+| `$REVIEW_DIR/cases/` | test 阶段的 case 文档 |
+| `$REVIEW_DIR/prompt.txt` | Mode A 写入的完整 review prompt |
+| `$REVIEW_DIR/output.txt` | Mode B `codex exec -o` 的报告 |
+
+写进 prompt 给 codex 的路径必须是**展开后的绝对路径**（codex 看不到我们的 shell 变量）。review 结束后目录保留供追溯，不必删除。
+
 根据 `review_type` 准备不同的上下文：
 
 **code:**
 ```bash
 # 导出 diff（基于 git SHA 或 HEAD~N），排除测试文件
-git diff <BASE_SHA>..<HEAD_SHA> -- . ':!tests/' ':!**/*.test.*' ':!**/*.spec.*' > /tmp/codex-review-input.diff
+git diff <BASE_SHA>..<HEAD_SHA> -- . ':!tests/' ':!**/*.test.*' ':!**/*.spec.*' > "$REVIEW_DIR/input.diff"
 # 如果 diff 过大（>3000 行），按文件拆分，分批审查
 ```
 
 **test:**
 ```bash
 # 导出测试文件 diff
-git diff <BASE_SHA>..<HEAD_SHA> -- "tests/**" "**/*.test.*" "**/*.spec.*" > /tmp/codex-review-input.diff
+git diff <BASE_SHA>..<HEAD_SHA> -- "tests/**" "**/*.test.*" "**/*.spec.*" > "$REVIEW_DIR/input.diff"
 
 # 【关键】收集 case 目录中对应的测试用例文档作为上下文
 # 查找项目中的 case/testcase/cases 目录
 find . -type d -iname "case*" -o -type d -iname "testcase*" 2>/dev/null
-# 将找到的 case 文档复制到临时目录
-cp <case-docs> /tmp/codex-review-test-cases/
+# 将找到的 case 文档复制到本次 review 的工作目录
+cp <case-docs> "$REVIEW_DIR/cases/"
 ```
 
 test 审查时，除了 diff 本身，还必须将相关的 case 文档一起提交给 Codex，使其能够：
@@ -87,7 +105,7 @@ test 审查时，除了 diff 本身，还必须将相关的 case 文档一起提
 - 类型安全：是否有 any 滥用、类型断言、未校验的外部输入
 - 性能：是否有内存泄漏、无限增长的队列、缺少背压机制
 - 架构设计：职责是否清晰、耦合度是否合理、是否违反 DRY/YAGNI
-diff 文件路径：/tmp/codex-review-input.diff
+diff 文件路径：<REVIEW_DIR>/input.diff   ← 填展开后的绝对路径
 ```
 
 **test:**
@@ -95,14 +113,14 @@ diff 文件路径：/tmp/codex-review-input.diff
 你是一个高级测试审查专家。请审查以下测试代码 diff，按 Critical / Important / Minor 三级给出 review 报告。
 注意：本次审查范围仅限测试代码。如果你发现需要修改项目源代码的问题，请在 Minor 中标注为"越界建议（源码）"。
 审查维度：
-- 测试覆盖率：对照 /tmp/codex-review-test-cases/ 中的 case 文档，是否每个 case 都有对应测试
+- 测试覆盖率：对照 <REVIEW_DIR>/cases/ 中的 case 文档，是否每个 case 都有对应测试
 - 断言准确性：对照 case 文档中的预期结果，断言是否精确匹配
 - 测试有效性：是否在测试真实行为而非 mock 行为
 - 边界覆盖：是否覆盖了边界条件、错误路径、关键业务逻辑
 - 测试隔离性：测试之间是否相互独立，是否有共享状态污染
 - 可维护性：测试命名是否清晰，setup/teardown 是否合理
-diff 文件路径：/tmp/codex-review-input.diff
-case 文档路径：/tmp/codex-review-test-cases/
+diff 文件路径：<REVIEW_DIR>/input.diff   ← 填展开后的绝对路径
+case 文档路径：<REVIEW_DIR>/cases/
 ```
 
 ### Step 3: Invoke Codex CLI
@@ -116,7 +134,7 @@ case 文档路径：/tmp/codex-review-test-cases/
 **首轮 review 前的一次性准备：**
 
 ```bash
-# 1. 将 Step 2 构造的完整 review prompt 用 Write 工具写入 /tmp/codex-review-prompt.txt
+# 1. 将 Step 2 构造的完整 review prompt 用 Write 工具写入 $REVIEW_DIR/prompt.txt
 #    （交互消息保持简短单行，规避 TUI 多行提交的不确定性）
 
 # 2. 从当前 pane 向右分裂 review pane（不抢焦点）
@@ -127,13 +145,13 @@ AGENT="codex-review-$(date +%s)"
 herdr agent start "$AGENT" --kind codex --pane "$PANE_ID" --timeout 60000 -- -s read-only -a never
 ```
 
-记住 `$PANE_ID` 和 `$AGENT` 的实际值——后续每次 Bash 调用是新 shell，变量不会保留。
+记住 `$PANE_ID`、`$AGENT`、`$REVIEW_DIR` 的实际值——后续每次 Bash 调用是新 shell，变量不会保留。
 
 **每轮 review：**
 
 ```bash
 # 提交审查请求，阻塞等待 codex 完成（到达 idle/done/blocked 任一状态）
-herdr agent prompt "$AGENT" "请阅读 /tmp/codex-review-prompt.txt 并执行其中的审查任务，审查报告直接输出在对话中" --wait --timeout 600000
+herdr agent prompt "$AGENT" "请阅读 $REVIEW_DIR/prompt.txt 并执行其中的审查任务，审查报告直接输出在对话中" --wait --timeout 600000
 
 # 完成后读取审查报告（recent-unwrapped：无折行快照，适合程序化解析）
 herdr agent read "$AGENT" --source recent-unwrapped --lines 400 --format text
@@ -151,7 +169,7 @@ herdr agent read "$AGENT" --source recent-unwrapped --lines 400 --format text
 #### Mode B: codex exec（非 herdr 环境）
 
 ```bash
-codex exec -s read-only -o /tmp/codex-review-output.txt "<review-prompt>"
+codex exec -s read-only -o "$REVIEW_DIR/output.txt" "<review-prompt>"
 ```
 
 | 参数 | 作用 |
@@ -168,7 +186,7 @@ codex exec -s read-only -o /tmp/codex-review-output.txt "<review-prompt>"
 ```bash
 # Mode A（herdr）：报告即 Step 3 中 herdr agent read 的输出（codex 回复行以 • 开头），直接解析
 # Mode B（exec）：读取报告文件
-Read /tmp/codex-review-output.txt
+Read $REVIEW_DIR/output.txt
 ```
 
 解析报告中的三个优先级，并按修改边界分类：
@@ -207,16 +225,16 @@ Read /tmp/codex-review-output.txt
 ```bash
 # 重新导出修复后的 diff（遵守同样的边界过滤）
 # code: 排除测试文件
-git diff <BASE_SHA>..HEAD -- . ':!tests/' ':!**/*.test.*' ':!**/*.spec.*' > /tmp/codex-review-input.diff
+git diff <BASE_SHA>..HEAD -- . ':!tests/' ':!**/*.test.*' ':!**/*.spec.*' > "$REVIEW_DIR/input.diff"
 # test: 只包含测试文件
-git diff <BASE_SHA>..HEAD -- "tests/**" "**/*.test.*" "**/*.spec.*" > /tmp/codex-review-input.diff
+git diff <BASE_SHA>..HEAD -- "tests/**" "**/*.test.*" "**/*.spec.*" > "$REVIEW_DIR/input.diff"
 
 # Mode A（herdr）：同一会话继续，无需重发完整 prompt，直接描述修复内容
-herdr agent prompt "$AGENT" "我已修复以下问题：<修复摘要>。diff 已更新（/tmp/codex-review-input.diff），请重新审查，确认修复是否到位、是否引入新问题" --wait --timeout 600000
+herdr agent prompt "$AGENT" "我已修复以下问题：<修复摘要>。diff 已更新（$REVIEW_DIR/input.diff），请重新审查，确认修复是否到位、是否引入新问题" --wait --timeout 600000
 herdr agent read "$AGENT" --source recent-unwrapped --lines 400 --format text
 
 # Mode B（exec）：重新调用 Codex
-codex exec -s read-only -o /tmp/codex-review-output.txt "<review-prompt>"
+codex exec -s read-only -o "$REVIEW_DIR/output.txt" "<review-prompt>"
 ```
 
 **通过条件：** 报告中无 Critical（边界内）且无 Important（边界内）。
@@ -291,6 +309,7 @@ herdr pane close "$PANE_ID"
 - 在未读取 review 报告时声称"审查通过"
 - test review 时运行测试或修改项目源代码
 - herdr 模式下 review 正常结束后不关闭 review pane（遗留僵尸 pane）
+- 用固定共享路径（`/tmp/codex-review-input.diff` 之类）送审——会被本机其他并发 review 会话覆盖，codex 审到别人的 diff；一律用 `$REVIEW_DIR`
 
 **If Codex is wrong:**
 - 用技术理由 push back
@@ -306,6 +325,7 @@ herdr pane close "$PANE_ID"
 | diff 超过 3000 行 | 按文件或模块拆分，分批审查，合并报告 |
 | Codex 审查和内部 review 冲突 | 两者都列出，由用户裁决 |
 | 找不到 case 文档目录 | 提示用户指定 case 文档路径，或跳过覆盖率审查维度 |
+| codex 报告"diff 与任务不匹配 / 内容是别的项目" | 送审文件被并发会话覆盖：`ls -la --time-style=full-iso "$REVIEW_DIR"` 核对时间戳；确认用的是本会话独占的 `$REVIEW_DIR` 后重新导出，Mode A 在同一 codex 会话里说明新路径即可 |
 | herdr `agent start` 超时 | 确认 codex 可用（`which codex`）；pane 必须处于 shell 提示符状态；重试一次 |
 | herdr `agent prompt` 返回 `agent_prompt_stalled` | 提交后 5 秒内未观察到状态变化；重试一次 prompt |
 | herdr `agent prompt --wait` 超时 | `herdr agent wait "$AGENT" --timeout 300000` 再等一轮；仍未完成则 `agent read` 查看现场，保留 pane 汇报用户 |
