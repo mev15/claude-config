@@ -1,6 +1,6 @@
 name: Bug
 description: 缺陷报告，复现步骤必填
-labels: ["type/bug"]
+labels: ["bug"]
 body:
   - type: textarea
     id: behavior

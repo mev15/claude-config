@@ -1,6 +1,6 @@
 name: Feature
 description: 未开发的新功能/待办开发项，验收标准必填 — agent 可执行的最小单位
-labels: ["type/feature"]
+labels: ["feature"]
 body:
   - type: input
     id: goal
