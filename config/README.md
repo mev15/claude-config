@@ -54,3 +54,7 @@
 ## MCP 与 Plugin
 
 全局启用的 MCP server 与 plugin 清单及安装方式见 [mcp-plugin/](mcp-plugin/)。
+
+## Codex
+
+同机另一 harness（OpenAI Codex CLI）的审批与沙箱配置见 [codex/](codex/)——`approvals_reviewer` 把审批人交给模型，对应 Claude Code 的 `permissions.defaultMode: "auto"`。
