@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# gh 包装：默认以 GitHub App mev15-bot[bot] 身份运行，token 由 gh-app-token 提供，与 shell 启动文件无关。
+# 调用方已设 GH_TOKEN（如 CI）则原样沿用；要用人账号：GH_HUMAN=1 gh …，或直接 /usr/bin/gh。
+if [[ -z "${GH_HUMAN:-}" && -z "${GH_TOKEN:-}" ]]; then
+  if _t="$(gh-app-token 2>/dev/null)"; then export GH_TOKEN="$_t"; fi
+  unset _t
+fi
+exec /usr/bin/gh "$@"

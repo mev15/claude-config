@@ -1,0 +1,4 @@
+# ~/.config/gh-app/config —— GitHub App 换 token 参数（私钥只在本机，不进任何仓库）
+APP_ID=<App 页面顶部的 App ID>
+INSTALL_ID=<Install App 后地址栏 settings/installations/ 后面的数字>
+KEY="$HOME/.config/gh-app/mev15-bot.pem"

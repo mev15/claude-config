@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# 用 GitHub App 私钥换一个 installation token（1 小时有效），本地缓存 50 分钟。
+# 用法：export GH_TOKEN="$(gh-app-token)"    参数：--jwt 只输出 App JWT（调 /app 一类接口用）
+# 配置：~/.config/gh-app/config（APP_ID / INSTALL_ID / KEY），可用 GH_APP_CONFIG 覆盖。
+set -euo pipefail
+CONF="${GH_APP_CONFIG:-$HOME/.config/gh-app/config}"
+# shellcheck disable=SC1090
+. "$CONF"
+: "${APP_ID:?} ${INSTALL_ID:?} ${KEY:?}"
+CACHE="${KEY%.pem}.token"
+
+b64url() { openssl base64 -e -A | tr '+/' '-_' | tr -d '='; }
+now=$(date +%s)
+header=$(printf '{"alg":"RS256","typ":"JWT"}' | b64url)
+payload=$(printf '{"iat":%d,"exp":%d,"iss":"%s"}' "$((now - 60))" "$((now + 540))" "$APP_ID" | b64url)
+signature=$(printf '%s.%s' "$header" "$payload" | openssl dgst -sha256 -sign "$KEY" -binary | b64url)
+jwt="$header.$payload.$signature"
+if [[ "${1:-}" == "--jwt" ]]; then echo "$jwt"; exit 0; fi
+
+if [[ -f "$CACHE" ]]; then
+  read -r expires token < "$CACHE" || true
+  if [[ -n "${token:-}" && "$now" -lt "${expires:-0}" ]]; then echo "$token"; exit 0; fi
+fi
+response=$(curl -fsS -X POST \
+  -H "Authorization: Bearer $jwt" -H "Accept: application/vnd.github+json" \
+  "https://api.github.com/app/installations/$INSTALL_ID/access_tokens")
+token=$(jq -r .token <<<"$response")
+[[ -n "$token" && "$token" != "null" ]] || { echo "换 token 失败: $response" >&2; exit 1; }
+umask 077
+printf '%s %s\n' "$((now + 3000))" "$token" > "$CACHE.tmp" && mv "$CACHE.tmp" "$CACHE"
+echo "$token"

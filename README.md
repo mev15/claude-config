@@ -20,6 +20,12 @@ Claude Code 配置库：集中维护 skills、config（settings）、MCP/plugin�
 
 [tg-send/](tg-send/) — 统一 Telegram 通知管道：零依赖 bash CLI（仅需 curl），凭据集中 `~/.config/tg-send/`（一个 bot 一个 env 文件 + default symlink 切换默认），Claude Code 的 cron / skill / hook 与任意脚本共用同一入口，多 bot 发件身份天然分线。详见 [tg-send/README.md](tg-send/README.md)。
 
+## gh-app
+
+[gh-app/](gh-app/) — agent 机器的 GitHub 身份：`gh` / `git` 以 GitHub App `mev15-bot[bot]` 操作，不用人账号 PAT。
+`gh-app-token` 用私钥换 1 小时 installation token（缓存 50 分钟），`gh` 包装装到 `/usr/local/bin` 让任何进程都自动带上
+（与 shell 启动文件无关）；每台机器一把私钥可单独吊销。详见 [gh-app/README.md](gh-app/README.md)。
+
 ## Commands
 
 [commands/](commands/) — 斜杠命令薄壳。Claude Code 的 tab 补全只作用于命令名、不覆盖参数区，多子命令 skill 想要参数级补全，唯一路径是把子命令升格为独立命令名：`/repo-memory-init`、`/repo-memory-migrate` 各三行，正文仅一句「调用 repo-memory skill 执行对应子命令」——协议单一事实源仍在 SKILL.md，薄壳只当补全入口。
